@@ -4,7 +4,8 @@ Run apt-get -y install npm
 
 Run npm install mongodb \
 http \
-express
+express \
+body-parser
 Add server/ /server/
 Add nodeStartup.sh /nodeStartup.sh
 RUN chmod +x /nodeStartup.sh

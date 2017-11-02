@@ -1,68 +1,3 @@
-<html lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <link rel="icon " type = "image/x-icon" href="img/icon.png"/>
-    <!-- CSS  -->
-    <link href="css/fonts.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-    <link href="css/semantic.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-    <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/components/icon.min.css'>
-
-</head>
-<script   src="https://code.jquery.com/jquery-3.1.0.js"   integrity="sha256-slogkvB1K3VOkzAI8QITxV3VzpOnkeNVsKvtkYLMjfk="   crossorigin="anonymous"></script>
-<style>
-body{
-  height:100%; 
-  background-color:#f44336;  
-  font-family:roboto !important;
-  color:white;
-}
-#textarea{
-
-
-    overflow: auto;
-    outline: none;
-    padding:3%;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-    border-color: rgba(255, 255, 255, 255);
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0);
-    height:40%;
-    width:100%;
-    resize: none;
-}
-</style>
-  <body>
-
-<!---MainPage-->
-
-<div id="mainPage" class="ui container basic segment" >
-  
-     <h1 class="header inverted thin " style="text-align:center; color:white; top:10%; width:100%;font-size:10vw; margin:0px;">Simpleton</h1> 
-     <div class="ui search basic segment center aligned">
-      <div class="ui icon input transparent inverted " id="searchBox">
-        <input    id="search" type="text" placeholder="Enter your Key">
-        <i class="search icon "></i>
-      </div>
-      
-    </div>
-    <div id="results"></div>
-</div>
-
-
-
-
-<div id ="footer" class="container basic segment ui">
-  <div class="ui divider inverted"></div>
-  <h5 class="ui  header center aligned" style="color:white;">Made with<a class="ui red circular label">Love</a> by  <a href="http://www.lucolsthoorn.com">Luc Olsthoorn</a></h5>
-  
-</div>
-
-
-<!--JS -->
-<script>
 $(document).ready(function(){
   $("#search").focus();
 });
@@ -129,11 +64,23 @@ $(document).ready(function(){
           
 
   }
-  function makeRequest(key, Note, callback){
+  function makeRequest(key, note, callback){
+    console.log({"key":key, "note": note});
     $("#textBox").addClass("disabled field");
-    setTimeout(function(){
-      callback();
-    },1000);
+    $.ajax({
+      type: "POST",
+      url: "/setNote",
+      data: JSON.stringify({"key":key, "note": note}),
+      success: function (data) {
+        callback();
+      } ,
+      error: function(){
+        $('#progressBar').remove();
+        $("#results").empty();
+        dispNotFound(key);
+      }, 
+      contentType: 'application/json'
+    });
   }
   function dispNotFound(key){
     $("body").css('background-color','#f44336');
@@ -158,28 +105,30 @@ $(document).ready(function(){
            dispAddNoteBox(key);
         }else{
         console.log(key);
-        var x = serverRequest(key);
-        $("#results").empty();
-        if(x){
-          dispFound(x);
-        }else{
-          dispNotFound(key);
-        }
+        serverRequest(key, function(x){
+          $("#results").empty();
+          if(x){
+            dispFound(x);
+          }else{
+            dispNotFound(key);
+          }
+        }); 
       }
       }, 20);
       
     });
   //Make request
-  function serverRequest(key){
-    if(key=="bob"){
-      return "yes hello friend";  
-    }else {
-      return false;
-    }
+  function serverRequest(key, callback){
+    $.ajax({
+      type: "POST",
+      url: "/getNote",
+      data: JSON.stringify({"key":key}),
+      success: function (data) {
+        callback(data);
+      } ,
+      error: function(){
+        callback(false);
+      }, 
+      contentType: 'application/json'
+    });
   }
-
-</script>
-<script src="js/semantic.js"></script>
-
-</body>
-</html>
