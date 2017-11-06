@@ -10,9 +10,13 @@ var PORT=8080;
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use( bodyParser.text() );       // to support JSON-encoded bodies
 
-//var database = require('./database.js');	
-//database.connect();
-
+var database = require('./database.js');	
+try {
+    database.connect(); // may throw three types of exceptions
+} catch (e){
+	console.log(e);
+}
+//database.setup();
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(req, res){
   		res.sendFile(path.join(__dirname, 'public/index.html'));
