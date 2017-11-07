@@ -1,6 +1,6 @@
 var connected = false;
 var database;
-exports.connect = function () {
+exports.connect = function (callback) {
 	
     var MongoClient = require('mongodb').MongoClient, format = require('util').format;
     console.log("mongodb://database:27017/mydb");
@@ -9,6 +9,7 @@ exports.connect = function () {
     	connected = true;
     	database = db;
     	console.log("connected to mongoDB");
+    	callback();
 	});
 }
 exports.query = function (){
@@ -23,14 +24,5 @@ exports.query = function (){
 }
 exports.setup = function(){
 	//Runs if the DB doesnt exist 
-	collectionName= "myTable";
-	database.collectionNames(collectionName, function(err, names) {
-    	if(names.length <= 0){
-    		database.createCollection(collectionName, function(err, res) {
-		    if (err) throw err;
-		    console.log("Collection created!");
-		    database.close();
-		  });
-    	}
-	});
+	
 }

@@ -104,7 +104,7 @@ function dispNotFound(key) {
 function dispFound(note) {
 	$("body").css('background-color', '#4caf50');
 	$("#results").append(note);
-	console.log(notex);
+	console.log(note);
 }
 $("#search").keydown(function(e) {
 
